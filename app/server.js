@@ -46,11 +46,11 @@ app.use(function(req, res, next) {
 
 
 app.get("/", (req, res) => {
-//   let sql = "SHOW databases;";
-//   let query = db.query(sql, (err, results) => {
-//     if (err) throw err;
-//     console.log(results);
-//   });
+  let sql = "SHOW databases;";
+  let query = db.query(sql, (err, results) => {
+    if (err) throw err;
+    console.log(results);
+  });
 
   res.render("index");
 });
@@ -107,11 +107,8 @@ app.get('/displayHistogram', (req, res, err) => {
 });
 
 
-
-
-
 app.post("/checkUser", (req, res) => {
-    // console.log(req.body.username, req.body.password);
+    console.log(req.body.username, req.body.password);
     var username = req.body.username;
     var password = req.body.password;
     let sql2 = `SELECT * FROM users WHERE username = '${username}' AND password = '${MDS(password)}';`;
@@ -128,7 +125,7 @@ app.post("/checkUser", (req, res) => {
             
             // Set session for verified user
             req.session.user = results;
-            req.session.user = null;
+            req.session.fileContent = null;
             console.log("session set: ", req.session);
             
             res.redirect('/checkUser'); // send to app.get('/checkUser')
@@ -195,13 +192,6 @@ app.post("/handleFile", (req, res, err) => {
         res.redirect('displayHistogram');
     }
 });    
-
-
-
-
-
-
-
 
 
 // Create table
