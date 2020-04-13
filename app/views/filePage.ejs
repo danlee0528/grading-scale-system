@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        table {
+          font-family: arial, sans-serif;
+          border-collapse: collapse;
+          width: 100%;
+        }
+        
+        td, th {
+          border: 1px solid #dddddd;
+          text-align: left;
+          padding: 8px;
+        }
+        </style>
+</head>
+<body>
+  <h1>Hello <%= user %></h1> 
+
+  <form method = "post" enctype="multipart/form-data">
+    <label for="myfile">Select a file:</label>
+    <input type="file" id="myfile" name="myfile"><br><br>
+    <input type="submit" formaction="/handleFile" value="submit" >
+    <input type="submit" formaction="/handleLogout" value="logout">
+  </form>
+  <%= typeof msg != 'undefined' ? msg: ''%>
+
+</body>
+</html>

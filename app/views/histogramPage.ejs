@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Histogram</h1>
+    <form method = "post" enctype="multipart/form-data">
+        <label for="points">Points A+ (between 0 and 100):</label>
+        <input type="range" id="points" name="points" min="0" max="100">
+        <br>
+        <label for="points">Points A (between 0 and 100):</label>
+        <input type="range" id="points" name="points" min="0" max="100">
+        <br>
+        <label for="points">Points A- (between 0 and 100):</label>
+        <input type="range" id="points" name="points" min="0" max="100">
+        <br>
+        <label for="points">Points B+ (between 0 and 100):</label>
+        <input type="range" id="points" name="points" min="0" max="100">
+        <br>
+        <label for="points">Points B (between 0 and 100):</label>
+        <input type="range" id="points" name="points" min="0" max="100">
+        <br>
+        <label for="points">Points B- (between 0 and 100):</label>
+        <input type="range" id="points" name="points" min="0" max="100">
+        <br>
+        <label for="points">Points C+ (between 0 and 100):</label>
+        <input type="range" id="points" name="points" min="0" max="100">
+        <br>
+        <label for="points">Points C (between 0 and 100):</label>
+        <input type="range" id="points" name="points" min="0" max="100">
+        <br>
+        <label for="points">Points C- (between 0 and 100):</label>
+        <input type="range" id="points" name="points" min="0" max="100">
+        <br>
+        <label for="points">Points D (between 0 and 100):</label>
+        <input type="range" id="points" name="points" min="0" max="100">
+        <br>
+        <label for="points">Points F (between 0 and 100):</label>
+        <input type="range" id="points" name="points" min="0" max="100">
+
+
+        <input type="submit" formaction="/handleFile" value="submit" >
+        <input type="submit" formaction="/handleLogout" value="logout">
+      </form>
+    <%= typeof msg != 'undefined' ? msg: ''%>
+</body>
+</html>
