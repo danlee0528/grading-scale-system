@@ -40,11 +40,11 @@
         <br>
         <label for="points">Points F (between 0 and 100):</label>
         <input type="range" id="points" name="points" min="0" max="100">
-
+        <br><br>
 
         <input type="submit" formaction="/handleFile" value="submit" >
         <input type="submit" formaction="/handleLogout" value="logout">
       </form>
-    <%= typeof msg != 'undefined' ? msg: ''%>
+    <%= data %>
 </body>
 </html>

@@ -1,6 +1,7 @@
 const http = require("http");
 const mysql = require("mysql");
 const path = require("path");
+const fs = require('fs');
 const express = require("express");
 const ejs = require("ejs");
 const bodyParser = require("body-parser");
@@ -35,14 +36,13 @@ app.use(session({
     secret: "cmpt470",
     maxAge: 30*60*1000,  // 30 minutes
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
   }));
 
-  app.use(function(req, res, next) {
+app.use(function(req, res, next) {
 	console.log(`${req.method} request for '${req.url}' - ${JSON.stringify(req.body)}`);
 	next();
 });
-
 
 
 app.get("/", (req, res) => {
@@ -58,7 +58,7 @@ app.get("/", (req, res) => {
 
 app.get("/checkUser", (req, res) => {
     if (req.session.user){
-        console.log("session retrieved: ", req.session.user);
+        console.log("session retrieved: ", req.session);
 
         // for verified user
         res.render('filePage',{
@@ -75,7 +75,7 @@ app.get("/checkUser", (req, res) => {
 
 app.get("/handleFile", (req, res, err) => {
     if (req.session.user){
-        console.log("session retrieved: ", req.session.user);
+        console.log("session retrieved: ", req.session);
 
         // for verified user
         res.render('filePage',{
@@ -85,10 +85,29 @@ app.get("/handleFile", (req, res, err) => {
       } else {
         // redirect ... back to login
         res.render('index',{
-            msg: 'user sessoin not verified'
+            data: req.session.filecontent,
         });
       }
 });
+
+app.get('/displayHistogram', (req, res, err) => {
+  if (req.session.user){
+    console.log("session retrieved: ", req.session);
+
+    // for verified user
+    res.render('histogramPage', {
+      data: req.session.fileContent
+    });
+  } else {
+    // redirect ... back to login
+    res.render('index',{
+        msg: 'user sessoin not verified'
+    });
+  }
+});
+
+
+
 
 
 app.post("/checkUser", (req, res) => {
@@ -109,8 +128,8 @@ app.post("/checkUser", (req, res) => {
             
             // Set session for verified user
             req.session.user = results;
-
-            console.log("session set: ", req.session.user);
+            req.session.user = null;
+            console.log("session set: ", req.session);
             
             res.redirect('/checkUser'); // send to app.get('/checkUser')
         }
@@ -121,7 +140,7 @@ app.post("/checkUser", (req, res) => {
 // Logout Button on filePAge
 app.post("/handleLogout", (req, res, err) => {
     if (req.session.user){
-        console.log("session retrieved: ", req.session.user);
+        console.log("session retrieved: ", req.session);
         req.session.destroy();
         console.log(`session destroyed`);
         res.redirect('/');
@@ -135,7 +154,7 @@ app.post("/handleLogout", (req, res, err) => {
 // handle csv file
 app.post("/handleFile", (req, res, err) => {
     var file = req.files.myfile;
-
+    console.log('File info:', file);
     var obj = JSON.parse(JSON.stringify(file.data));
     // var obj = JSON.parse(file.data.toString('ascii'));
     console.log(obj.data);
@@ -162,7 +181,18 @@ app.post("/handleFile", (req, res, err) => {
         res.redirect('/handleFile');
     }else{
         console.log('total sums up to 100');
-        res.render('histogramPage');
+        
+        // save the csv file locally
+        fs.writeFile('./public/uploads/' + file.name, fcontent, (err) => {
+          if (err) throw err;
+          console.log('CSV file saved!');
+        });
+
+        // append csv file content to user session
+        req.session.fileContent = fcontent;
+        req.session.save();
+
+        res.redirect('displayHistogram');
     }
 });    
 
