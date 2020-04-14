@@ -54,10 +54,11 @@
     <h1>Histogram</h1>
     <div class = 'container' style="width: 100%; display:grid; grid-column-gap: 5px;">
             <div class="slidecontainer">
-                <label for="myRange">Please set a cutoff value on a scale from 1 to 300</label>
+                <label for="myRange">Please set a cutoff value on a scale from 1 to 200</label>
                 <br><br>
-                <input type="range" min="1" max="300" value="100" name ="myRnage" class="slider" id="myRange">
+                <input type="range" min="1" max="200" value="100" name ="myRnage" class="slider" id="myRange">
                 <p>Current value: <span id="demo"></span></p>
+                <p>Student count: <span id="studentCount"></span></p>
             </div>
             <div>
                 <table id = "histogramTable">
@@ -86,35 +87,111 @@
         var fdatahtml = fdata.innerHTML;
         fdata.innerHTML = 'DATA TABLE<br>';
         var lines = fdatahtml.trim().split('\n');
-        var newDT = []; // contains csv file in array 
-        var tableData = createCSVTable();
+        var newDT = []; 
+        var tableData = createCSVTable(newDT); // contains csv file in array 
         fdata.innerHTML += tableData;
-        var studentsFinalGrades;
-        var is_initial_histogram = true;
-        
-        studentsFinalGrades = create_histogram_of(newDT, null);
+        var finalCSVdata = [];
+        var is_scaled = true;
 
+
+        
         // Slider function
         var slider = document.getElementById("myRange");
         var output = document.getElementById("demo");
         
-        output.innerHTML = slider.value; // Display the default slider valu
         slider.oninput = function(){
+            var is_scaled = true;
+            console.log('============== slider oninput start =============');
             var scaleValue = this.value;
-            output.innerHTML = scaleValue;
-            studentsFinalGrades = create_histogram_of(newDT, scaleValue);
+            output.innerHTML = this.value;
+            if (is_scaled === 100){
+                is_scaled = false;
+            }else{
+                is_scaled = true;
+            }
+            var newDT = []; 
+            var tableData = createCSVTable(newDT); // contains csv file in array 
+            fdata.innerHTML += tableData;
+
+
+            var studentsFinalGrades = scaleHistogram(newDT, scaleValue);
+            console.log('student final grades check \n', studentsFinalGrades);
+            // finalCSVdata = add_final_total_to_(newDT, studentsFinalGrades);
+            // console.log('AFTER ALL csv data\n', finalCSVdata);
+            var finalCSVdata = add_final_total_to_(newDT, studentsFinalGrades);
+            console.log('AFTER ALL csv data\n', finalCSVdata);
+            console.log('============== slider oninput end =============');
         }
-      
+        
+        studentsFinalGrades = create_histogram_of(newDT, null);
+
+        
+        
+        // console.log('student final grades check \n', studentsFinalGrades);
+        // // finalCSVdata = add_final_total_to_(newDT, studentsFinalGrades);
+        // console.log('AFTER ALL csv data\n', finalCSVdata);
+
+
+
+
+
+
+
+        function scaleHistogram(newDT, scaleValue){
+            var studentScaeldFinalGrades = create_histogram_of(newDT, scaleValue);
+            return studentScaeldFinalGrades;
+        }
+
+
+
+        // Get csv data and map student recrords to their final totals
+        // return a new csv data as a 2d array
+        function add_final_total_to_(csvData, finalTotals){
+            var newCSVdata = csvData;
+            
+            // for each row of csv data, add final grade to coressponding studentID
+            for(records in csvData){
+                // Add new column headers if current row is header
+                if(csvData[records][0] === 'studentID'){
+                    if (!newCSVdata[records].includes('final percentage') || !newCSVdata[records].includes('final percentage')){
+                        newCSVdata[records].push('final percentage'); 
+                        newCSVdata[records].push('final letter grade');
+                    }
+                }else if (csvData[records][0] === 'total'){
+                    if (!newCSVdata[records].includes('-')){
+                        newCSVdata[records].push('-');
+                        newCSVdata[records].push('-');
+                    }
+                }else{
+                    if (!newCSVdata[records].includes(finalTotals[studentID]) || !newCSVdata[records].includes(find_grade_letter_of(finalTotals[studentID]))){
+                        // get the current row studnetID
+                        var studentID = csvData[records][0];
+                        // add final percentage and letter grade
+                        newCSVdata[records].push(finalTotals[studentID]); 
+                        newCSVdata[records].push(find_grade_letter_of(finalTotals[studentID])); 
+                        
+                    }
+                }
+            }
+
+            // console.log('final wrap up\n', newCSVdata);
+
+            return newCSVdata;
+        }
+
 
 
         // return student records after plotting a histrogram of students' grades
         function create_histogram_of(data, scaleValue){
-            console.clear();
-            var studentFinalRecords;
+            // console.log(`create_histogram_of / scaleValue = ${scaleValue}`);
+            var studentFinalRecords = {};
 
             // 1. Get the length of total row = number of grade items
-            var num_grade_items, total_row_index = get_num_of_grade_items(data); 
-            
+            var num_grade_items = get_num_of_grade_items(data); 
+            var total_row_index = get_total_row_index(data);
+
+            console.log(`create_histogram_of / num_grade_items = ${num_grade_items} and total_row_index = ${total_row_index}`);
+
             // 2. For each student row, calculate the total sum
             var student_totals = calculate_total_sum_of_student(data, total_row_index);
             console.log('Student initial records\n', student_totals);
@@ -122,15 +199,75 @@
             // if scale value is set, readjust the total sums of students
             // and display in histogram for each student record with their corresponding grade
             if (scaleValue !== null && scaleValue !== undefined){
+                console.log(`scale value is set`);
                 studentFinalRecords = assign_grades(student_totals, scaleValue);  
             }else{
+                console.log(`scale value is not set`);
                 studentFinalRecords = assign_grades(student_totals, null);     
             }
 
             console.log(`Student Final Grades\n `, studentFinalRecords);
+            
+            // update student count
+            document.getElementById('studentCount').innerHTML = Object.keys(studentFinalRecords).length;
 
             return studentFinalRecords;
         }
+
+
+
+        // return the number of grading items based on the total row length as a parameter
+        function get_num_of_grade_items(data){
+            var total_row_index;
+
+            for (var i =0; i < data.length; i++){
+                if (data[i][0] === 'total'){
+                    total_row_index = i;
+                    break;
+                }
+            }
+            var total_row_length = data[total_row_index].length;
+            return total_row_length;
+        }
+
+
+
+        function get_total_row_index(data){
+            var total_row_index;
+
+            for (var i =0; i < data.length; i++){
+                if (data[i][0] === 'total'){
+                    total_row_index = i;
+                    break;
+                }
+            }
+            return total_row_index;
+        }
+
+
+
+        // Return a dictionary of total sumr per student {studentID: total}
+        function calculate_total_sum_of_student(data, total_row_index){
+            console.log(`calculate_total_sum_of_students / total_row_index = ${total_row_index}`);
+            console.log(`calculate_total_sum_of_students / data\n`, data);
+
+            var studentRecords = {};
+            
+            for (var row = 1; row < data.length; row++){
+                // skip the total row
+                if (data[row] !== data[total_row_index]){
+                    // sum all grades per student
+                    var student_sum = 0;
+                    for (var col= 1; col < data[row].length; col++){
+                        student_sum += parseInt(data[row][col]) * parseInt(data[total_row_index][col]) / 100;
+                    }
+                    // console.log(`StudnetID = ${data[row][0]} has total = ${student_sum}`);
+                    studentRecords[data[row][0]] = student_sum; 
+                }
+            }  
+            return studentRecords;
+        }
+
 
 
         // Assign corresponding grades to students and display histogram 
@@ -153,6 +290,9 @@
             
             tbody.innerHTML += tbodyTemplate;
 
+            console.log(`assing_grades / studentRecrods\n`, studentRecords);
+
+
             if(scaleValue === null || scaleValue === undefined){
                 var studnetGradeRecords = studentRecords;
                 console.log('No scaling ...');
@@ -164,7 +304,7 @@
                 tbody.innerHTML = tbodyTemplate;
             }
 
-            // console.log(`Student records to grade\n`, studnetGradeRecords);
+            console.log(`Student records to grade\n`, studnetGradeRecords);
             
 
             for (var record in studnetGradeRecords){
@@ -224,6 +364,40 @@
         }
 
 
+
+
+        function find_grade_letter_of(score){
+            var gletter;
+
+            if (score >= 95){
+                gletter = 'A+';
+            }else if(score >= 90 && score <= 94.99){
+                gletter = 'A';
+            }else if(score >= 85 && score <= 89.99){
+                gletter = 'A-';
+            }else if(score >= 80 && score <= 84.99){
+                gletter = 'B+';
+            }else if(score >= 75 && score <= 79.99){
+                gletter = 'B';
+            }else if(score >= 70 && score <= 74.99){
+                gletter = 'B-';;
+            }else if(score >= 65 && score <= 69.99){
+                gletter = 'C+';
+            }else if(score >= 60 && score <= 64.99){
+                gletter = 'C';
+            }else if(score >= 55 && score <= 59.99){
+                gletter = 'C-';
+            }else if(score >= 50 && score <= 54.99){
+                gletter = 'D';
+            }else{
+                gletter = 'F';
+            }       
+
+            return gletter;
+        }
+
+
+
         // Scale student totals by given scale value
         // return a new student total records {studnetID: total}
         function scaleStudentTotals(studentRecords, scaleValue){
@@ -236,43 +410,8 @@
         }
      
 
-        // return the number of grading items based on the total row length as the first parameter
-        // return index of total row as the second parameter
-        function get_num_of_grade_items(data){
-            var total_row_index;
 
-            for (var i =0; i < data.length; i++){
-                if (data[i][0] === 'total'){
-                    total_row_index = i;
-                    break;
-                }
-            }
-            var total_row_length = data[total_row_index].length;
-            return total_row_length, total_row_index;
-        }
-
-
-        // Return a dictionary of total sumr per student {studentID: total}
-        function calculate_total_sum_of_student(data, total_row_index){
-            var studentRecords = {};
-            
-            for (var row = 1; row < data.length; row++){
-                // skip the total row
-                if (data[row] !== data[total_row_index]){
-                    // sum all grades per student
-                    var student_sum = 0;
-                    for (var col= 1; col < data[row].length; col++){
-                        student_sum += parseInt(data[row][col]) * parseInt(data[total_row_index][col]) / 100;
-                    }
-                    // console.log(`StudnetID = ${data[row][0]} has total = ${student_sum}`);
-                    studentRecords[data[row][0]] = student_sum; 
-                }
-            }  
-            return studentRecords;
-        }
-
-
-        function createCSVTable(){
+        function createCSVTable(newDataTable){
             var tableData = '<table>';
             
                 for(var row = 0; row < lines.length; row++){
@@ -280,7 +419,7 @@
                     
                     // for each string row as elements of the array, parse them
                     var colData = lines[row].split(',');
-                    newDT.push(colData);
+                    newDataTable.push(colData);
                     // console.log(`column data at ${row}: `, colData);
                     
                     for (var col = 0; col < colData.length; col++){
