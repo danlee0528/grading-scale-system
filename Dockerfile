@@ -1,8 +1,9 @@
 # Use the official lightweight Node.js 10 image.
 # https://hub.docker.com/_/node
-FROM node:13.10.1-slim
+FROM node:10.9.0-alpine
 
 # Create and change to the app directory.
+RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
 # Copy application dependency manifests to the container image.
@@ -16,5 +17,6 @@ RUN npm install
 # Copy local code to the container image.
 COPY . .
 
+EXPOSE 8080
 # Run the web service on container startup.
 CMD [ "npm", "start" ]
