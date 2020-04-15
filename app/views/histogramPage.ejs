@@ -26,6 +26,10 @@
         /* border: 1px solid red; */
         text-align: center;
     }
+    .dataTableContainer{
+        padding-bottom: 5%;
+    }
+
     .histogramContainer{
         margin-top: 1%;
         margin-bottom: 1%;
@@ -55,18 +59,13 @@
         width: 100%;
     }
     .dataTableTD{
-        border: 1px solid red;
+        border-bottom: 1px solid grey;
     }
     .dataTableTH{
-        border: 1px solid yellow;
+        border-bottom: 1px solid yellow;
         padding-left: 1%;
         padding-right: 1%;
     }
-
-
-
-
-
     
     .slider {
       -webkit-appearance: none;
@@ -120,6 +119,13 @@
         opacity: 1;
        
     }
+    #myInput{
+        width: 30%;
+        padding: 0.5%;
+        text-align: center;
+        margin-bottom: 5%;
+        margin-top: 5%;
+    }
 
 </style>
 <body>
@@ -137,12 +143,14 @@
                     </tbody>
                 </table>
             </div>
-                    <label for="myRange">Please set a cutoff value on a scale from 1 to 200</label>
+                <label for="myRange">Please set a cutoff value on a scale from 1 to 200</label>
             <br><br>
             <input type="range" min="1" max="200" value="100" name ="myRnage" class="slider" id="myRange">
             <p>current value: <span id="demo">100</span></p>
             <p>student count: <span id="studentCount"></span></p>
         </div>
+
+        <input type="text" id="myInput" onkeyup="tableSearch()" placeholder="Search for studnetID ..." title="Type in a name">
 
         <div class="dataTableContainer">
             <div id = "fdata"><%= data %></div>
@@ -539,6 +547,26 @@
         }
 
 
+
+        function tableSearch() {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("myInput");
+            filter = input.value.toUpperCase();
+            table = document.getElementsByClassName("dataTable")[0];
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[0];
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+                }       
+            }
+            console.log(`done searching ...`);
+            }
     </script>
 </body>
 </html>
