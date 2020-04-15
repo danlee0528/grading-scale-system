@@ -1,0 +1,13 @@
+version: '3'
+services:
+  web:
+    build: .
+    command: npm start
+    volumes:
+      - .:/usr/src/app/
+      - /usr/src/app/node_modules
+    ports:
+      - 12345:8080
+      - 8080:8080
+      - 3000:3000
+      
