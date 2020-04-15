@@ -7,13 +7,13 @@ WORKDIR /usr/src/app
 
 # intsall app dependencies using the npm binary
 # npm version 4 or earlier doesn't generate package-lock.json
-COPY package*.json /usr/src/app
+COPY package*.json ./
 
 # Install production dependencies.
 RUN npm install
 
 # Copy local code to the container image.
-COPY . /usr/src/app
+COPY . .
 
 
 EXPOSE 8080
