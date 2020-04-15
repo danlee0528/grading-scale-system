@@ -5,8 +5,7 @@ const ejs = require("ejs");
 const bodyParser = require("body-parser");
 const session = require("express-session");
 const fileUpload = require('express-fileupload');
-const hostname = "127.0.0.1";
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8080;
 const app = express();
 
 

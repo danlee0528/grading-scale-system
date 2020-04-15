@@ -1,22 +1,22 @@
 {
-    "name": "finalPRJ",
-    "version": "1.0.0",
-    "description": "",
-    "main": "server.js",
-    "dependencies": {
-      "body-parser": "^1.19.0",
-      "ejs": "^3.0.1",
-      "express": "^4.17.1",
-      "mysql": "^2.18.1",
-      "node": "^13.10.1",
-      "nodejs": "^0.0.0",
-      "nodemon": "^2.0.2"
-    },
-    "devDependencies": {},
-    "scripts": {
-      "test": "echo \"Error: no test specified\" && exit 1",
-      "start": "node server.js"
-    },
-    "author": "",
-    "license": "ISC"
-  }
+  "name": "app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "ejs": "^3.0.2",
+    "express-session": "^1.17.0",
+    "express": "^4.17.1",
+    "express-fileupload": "^1.1.7-alpha.3",
+    "nodemon": "^2.0.3",
+    "mysql": "^2.18.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC"
+}
