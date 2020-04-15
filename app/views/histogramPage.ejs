@@ -6,22 +6,74 @@
     <title>Document</title>
 </head>
 <style>
-    table{
+    *{
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    body{
+        background-color: rgb(40, 41, 42);
+        color: white;
+    }
+
+    .container{
+      width: 100%;
+      text-align: center;
+      margin-top: 12%;
+      justify-content: center;
+    }
+
+    .gridContainer, .dataTableContainer{
+        width: auto;
+        /* border: 1px solid red; */
         text-align: center;
     }
-    td, th{
-        border: 1px solid grey;
+    .histogramContainer{
+        margin-top: 1%;
+        margin-bottom: 1%;
+        background-color: rgba(0, 0, 0, 0.1);
     }
-    .slidecontainer {
-        width: 40%;
+
+    #histogramTable{
+        margin-left: 5%;
+        text-align: center;
+        width: inherit;
+        padding: 3%;
     }
+
+    .dataTable{
+        text-align: center;
+        width: 100%;
+    }
+
+    .histogramTD{
+        color:rgb(47, 139, 243);
+    }
+    .histogramTH{
+        color:rgb(110, 200, 57);
+    }
+
+    .dataTable{
+        width: 100%;
+    }
+    .dataTableTD{
+        border: 1px solid red;
+    }
+    .dataTableTH{
+        border: 1px solid yellow;
+        padding-left: 1%;
+        padding-right: 1%;
+    }
+
+
+
+
+
     
     .slider {
       -webkit-appearance: none;
-      width: 100%;
+      width: 50%;
       height: 15px;
       border-radius: 5px;
-      background: #d3d3d3;
+      background: #030e0fa9;
       outline: none;
       opacity: 0.7;
       -webkit-transition: .2s;
@@ -38,7 +90,7 @@
       width: 25px;
       height: 25px;
       border-radius: 50%;
-      background: #4CAF50;
+      background: rgb(47, 139, 243);
       cursor: pointer;
     }
     
@@ -46,34 +98,53 @@
       width: 25px;
       height: 25px;
       border-radius: 50%;
-      background: #4CAF50;
+      background: rgb(47, 139, 243);
       cursor: pointer;
     }
+
+
+    #logOutBtn{
+      background-color: #008CBA;
+      border: none;
+        color: white;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 14px;
+        opacity: 0.5;
+    }
+
+    #logOutBtn:hover{
+        cursor: pointer;
+        opacity: 1;
+       
+    }
+
 </style>
 <body>
-    <h1>SCALE PAGE</h1>
-    <form method = "post" enctype="multipart/form-data">
-        <input type="submit" formaction="/handleLogout" value="logout">
-    </form>
-    
-    <div class = 'container' style="width: 100%; display:grid; grid-column-gap: 5px;">
-        <h2>1. Scale Adjustment</h2>
-        <div class="slidecontainer">
-            <label for="myRange">Please set a cutoff value on a scale from 1 to 200</label>
+    <div class="container">
+        <h1>SCALE PAGE</h1>
+        
+        <form method = "post" enctype="multipart/form-data">
+            <input type="submit" formaction="/handleLogout" value="logout", id= "logOutBtn">
+        </form>
+        
+        <div class="gridContainer">
+            <div class="histogramContainer">
+                <table id = "histogramTable">
+                    <tbody id = "histogramTableBody">
+                    </tbody>
+                </table>
+            </div>
+                    <label for="myRange">Please set a cutoff value on a scale from 1 to 200</label>
             <br><br>
             <input type="range" min="1" max="200" value="100" name ="myRnage" class="slider" id="myRange">
-            <p>Current value: <span id="demo">100</span></p>
-            <p>Student count: <span id="studentCount"></span></p>
+            <p>current value: <span id="demo">100</span></p>
+            <p>student count: <span id="studentCount"></span></p>
         </div>
-        <div>
-            <h2>2. Histogram</h2>
-            <table id = "histogramTable">
-                <tbody id = "histogramTableBody">
-                </tbody>
-            </table>
-        </div>
-        <div>
-            <h2>3. Data Table</h2>
+
+        <div class="dataTableContainer">
             <div id = "fdata"><%= data %></div>
         </div>
     </div>
@@ -146,15 +217,15 @@
 
 
         function plotNewCSVDataTable(newDataTable, newDataTable_length){
-            var tableData = '<table>';
-            
+            var tableData = "<table class='dataTable'>";
+            var header_legnth = get_num_of_grade_items(newDataTable);
             for(var row = 0; row < newDataTable_length; row++){
-                tableData += '<tr>';
-                for (var col = 0; col < newDataTable[row].length; col++){
+                tableData += "<tr class='dataTableTR'>";
+                for (var col = 0; col < header_legnth; col++){
                     if(row === 0 ){
-                        tableData += '<th>' + newDataTable[row][col] + '</th>';
+                        tableData += "<th class='dataTableTH'>" + newDataTable[row][col] + '</th>';
                     }else{
-                        tableData += '<td>' + newDataTable[row][col] + '</td>';
+                        tableData += "<td class='dataTableTD'>" + newDataTable[row][col] + '</td>';
                     }
                 }
                 tableData += '</tr>';
@@ -251,7 +322,8 @@
             var total_row_index;
 
             for (var i =0; i < data.length; i++){
-                if (data[i][0] === 'total'){
+                // if current row includes studentID, then count the number of grade items
+                if (data[i].includes('studentID')){
                     total_row_index = i;
                     break;
                 }
@@ -306,17 +378,17 @@
         // return student final grades {studnetID: final total point};
         function assign_grades(studentRecords, scaleValue){
             var tbody = document.getElementById('histogramTableBody');
-            var tbodyTemplate = "<tr id ='colAp'><th>A+</th></tr>" +
-                                "<tr id ='colA'><th>A</th></tr>" +
-                                "<tr id ='colAm'><th>A-</th></tr>" +
-                                "<tr id ='colBp'><th>B+</th></tr>" +
-                                "<tr id ='colB'><th>B</th></tr>" +
-                                "<tr id ='colBm'><th>B-</th></tr>" +
-                                "<tr id ='colCp'><th>C+</th></tr>" +
-                                "<tr id ='colC'><th>C</th></tr>" +
-                                "<tr id ='colCm'><th>C-</th></tr>" +
-                                "<tr id ='colD'><th>D</th></tr>" +
-                                "<tr id ='colF'><th>F</th></tr>";
+            var tbodyTemplate = "<tr class='histogramTR' id ='colAp'><th class='histogramTH'>A+</th></tr>" +
+                                "<tr class='histogramTR' id ='colA'><th class='histogramTH'>A</th></tr>" +
+                                "<tr class='histogramTR' id ='colAm'><th class='histogramTH'>A-</th></tr>" +
+                                "<tr class='histogramTR' id ='colBp'><th class='histogramTH'>B+</th></tr>" +
+                                "<tr class='histogramTR' id ='colB'><th class='histogramTH'>B</th></tr>" +
+                                "<tr class='histogramTR' id ='colBm'><th class='histogramTH'>B-</th></tr>" +
+                                "<tr class='histogramTR' id ='colCp'><th class='histogramTH'>C+</th></tr>" +
+                                "<tr class='histogramTR' id ='colC'><th class='histogramTH'>C</th></tr>" +
+                                "<tr class='histogramTR' id ='colCm'><th class='histogramTH'>C-</th></tr>" +
+                                "<tr class='histogramTR' id ='colD'><th class='histogramTH'>D</th></tr>" +
+                                "<tr class='histogramTR' id ='colF'><th class='histogramTH'>F</th></tr>";
             
             tbody.innerHTML += tbodyTemplate;
 
@@ -344,47 +416,47 @@
                 if (grade >= 95){
                     //tcolAP = tr, table row
                     var tcolAp = document.getElementById('colAp');
-                    tcolAp.innerHTML += "<td class='studentRecordCell'>o</td>";
+                    tcolAp.innerHTML += "<td class='histogramTD'>o</td>";
                    // console.log('assinged grade: A+');
                 }else if(grade >= 90 && grade <= 94.99){
                     var tcolA = document.getElementById('colA'); 
-                    tcolA.innerHTML += "<td class='studentRecordCell'>o</td>";
+                    tcolA.innerHTML += "<td class='histogramTD'>o</td>";
                     // console.log('assinged grade: A');
                 }else if(grade >= 85 && grade <= 89.99){
                     var tcolAm = document.getElementById('colAm'); 
-                    tcolAm.innerHTML += "<td class='studentRecordCell'>o</td>";
+                    tcolAm.innerHTML += "<td class='histogramTD'>o</td>";
                     // console.log('assinged grade: A-');
                 }else if(grade >= 80 && grade <= 84.99){
                     var tcolBp = document.getElementById('colBp');  
-                    tcolBp.innerHTML += "<td class='studentRecordCell'>o</td>";
+                    tcolBp.innerHTML += "<td class='histogramTD'>o</td>";
                     // console.log('assinged grade: B+');
                 }else if(grade >= 75 && grade <= 79.99){
                     var tcolB = document.getElementById('colB'); 
-                    tcolB.innerHTML += "<td class='studentRecordCell'>o</td>";
+                    tcolB.innerHTML += "<td class='histogramTD'>o</td>";
                     // console.log('assinged grade: B');
                 }else if(grade >= 70 && grade <= 74.99){
                     var tcolBm = document.getElementById('colBm');  
-                    tcolBm.innerHTML += "<td class='studentRecordCell'>o</td>";
+                    tcolBm.innerHTML += "<td class='histogramTD'>o</td>";
                     // console.log('assinged grade: B-');
                 }else if(grade >= 65 && grade <= 69.99){
                     var tcolCp = document.getElementById('colCp');  
-                    tcolCp.innerHTML += "<td class='studentRecordCell'>o</td>";
+                    tcolCp.innerHTML += "<td class='histogramTD'>o</td>";
                     // console.log('assinged grade: C+');
                 }else if(grade >= 60 && grade <= 64.99){
                     var tcolC = document.getElementById('colC');   
-                    tcolC.innerHTML += "<td class='studentRecordCell'>o</td>";
+                    tcolC.innerHTML += "<td class='histogramTD'>o</td>";
                     // console.log('assinged grade: C');
                 }else if(grade >= 55 && grade <= 59.99){
                     var tcolCm = document.getElementById('colCm');  
-                    tcolCm.innerHTML += "<td class='studentRecordCell'>o</td>";
+                    tcolCm.innerHTML += "<td class='histogramTD'>o</td>";
                     // console.log('assinged grade: C-');
                 }else if(grade >= 50 && grade <= 54.99){
                     var tcolD = document.getElementById('colD');  
-                    tcolD.innerHTML += "<td class='studentRecordCell'>o</td>";
+                    tcolD.innerHTML += "<td class='histogramTD'>o</td>";
                     // console.log('assinged grade:" D');
                 }else{
                     var tcolF = document.getElementById('colF');  
-                    tcolF.innerHTML += "<td class='studentRecordCell'>o</td>";
+                    tcolF.innerHTML += "<td class='histogramTD'>o</td>";
                     // console.log('assinged grade:: F');
                 }       
             }
@@ -392,7 +464,6 @@
         
             return studnetGradeRecords;
         }
-
 
 
 
@@ -442,10 +513,10 @@
 
 
         function createCSVTable(newDataTable, lines){
-            var tableData = '<table>';
+            var tableData = "<table class='dataTable'>";
             
                 for(var row = 0; row < lines.length; row++){
-                    tableData += '<tr>';
+                    tableData += "<tr class='dataTableTR'>";
                     
                     // for each string row as elements of the array, parse them
                     var colData = lines[row].split(',');
@@ -454,9 +525,9 @@
                     
                     for (var col = 0; col < colData.length; col++){
                         if(row === 0 ){
-                            tableData += '<th>' + colData[col] + '</th>';
+                            tableData += "<th class='dataTableTH'>" + colData[col] + '</th>';
                         }else{
-                            tableData += '<td>' + colData[col] + '</td>';
+                            tableData += "<td class='dataTableTD'>" + colData[col] + '</td>';
                         }
                     }
                     tableData += '</tr>';

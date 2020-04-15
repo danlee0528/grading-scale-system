@@ -153,24 +153,33 @@ app.post("/handleFile", (req, res, err) => {
     var file = req.files.myfile;
     console.log('File info:', file);
     var obj = JSON.parse(JSON.stringify(file.data));
-    // var obj = JSON.parse(file.data.toString('ascii'));
     console.log(obj.data);
     var enc = new TextDecoder('utf-8');
     var arr = new Uint8Array(obj.data);
     var fcontent = enc.decode(arr);
     console.log("DECODED: ", typeof fcontent, "\n", fcontent);
-    var total_row_index = fcontent.indexOf('total');
-    var total_row = fcontent.substring(total_row_index, fcontent.length);
-    console.log('Total Row: ', total_row);
-    var total_scores_percentages = total_row.replace("\r\n", '');
-    total_scores_percentages = total_scores_percentages.split(',');
-    console.log(total_scores_percentages);
-    var total_sum = 0;
 
-    for (var i = 1; i < total_scores_percentages.length; i ++){
-        total_sum += parseInt(total_scores_percentages[i]);
-    }
 
+    var total_row_startIndex = fcontent.indexOf('total');
+    // console.log('total_row_startIndex: ', total_row_startIndex, 'and type: ', typeof total_row_startIndex);
+    
+    // find the starting and ending indexes of total row in the data
+    // and truncate file content string from total_row to the rest 
+    var total_row = fcontent.substring(total_row_startIndex, fcontent.length);
+    console.log('truncated total_row string: ', total_row);
+    
+    var total_row_endIndex = total_row.indexOf('\r\n');
+    console.log(`total row start from index location ${total_row_startIndex} to ${total_row_endIndex+total_row_startIndex}`);
+    
+    total_row = total_row.substring(total_row, total_row_endIndex);
+    total_row = total_row.split(','); // total_row is convereted from string to array
+    console.log('Total Row Found: ', total_row);
+
+    // total_row contians ['total', num1, num2, num3]
+    // skip the total string and add all other numeric values
+    var total_sum = get_sum(total_row);
+
+    
     console.log('Total sum: ', total_sum);
 
     if (total_sum !== 100){
@@ -215,6 +224,17 @@ app.listen(port, () => {
   // console.log("ND HASH OF 1234 = ", MDS("1234"));
   // console.log("ND HASH OF hello = ", MDS("hello"));
 });
+
+// total row always start with ['total', num, num]
+// otherwise, it's invalid csv format
+function get_sum(arr){
+  var sum = 0;
+  for(var i=1; i < arr.length; i++){
+    console.log(parseInt(arr[i]));
+    sum += parseInt(arr[i]);
+  }
+  return sum;
+}
 
 
 function MDS(string) {
