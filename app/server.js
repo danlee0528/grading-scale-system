@@ -7,6 +7,8 @@ const session = require("express-session");
 const fileUpload = require('express-fileupload');
 const port = process.env.PORT || 8080;
 const app = express();
+const util= require('util');
+const decoder = new util.TextDecoder('utf-8');
 
 
 const db = mysql.createConnection({
@@ -151,9 +153,8 @@ app.post("/handleFile", (req, res, err) => {
     console.log('File info:', file);
     var obj = JSON.parse(JSON.stringify(file.data));
     console.log(obj.data);
-    var enc = new TextDecoder('utf-8');
     var arr = new Uint8Array(obj.data);
-    var fcontent = enc.decode(arr);
+    var fcontent = decoder.decode(arr); //decode
     console.log("DECODED: ", typeof fcontent, "\n", fcontent);
 
 
