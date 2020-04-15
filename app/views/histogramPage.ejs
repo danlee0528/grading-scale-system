@@ -51,9 +51,9 @@
     }
 </style>
 <body>
-    <h1>Histogram</h1>
+    <h1>Scale Adjustment</h1>
     <div class = 'container' style="width: 100%; display:grid; grid-column-gap: 5px;">
-            <div class="slidecontainer">
+            <div class="slidecontainer" stype=''>
                 <label for="myRange">Please set a cutoff value on a scale from 1 to 200</label>
                 <br><br>
                 <input type="range" min="1" max="200" value="100" name ="myRnage" class="slider" id="myRange">
@@ -61,6 +61,7 @@
                 <p>Student count: <span id="studentCount"></span></p>
             </div>
             <div>
+                <h1>Histogram</h1>
                 <table id = "histogramTable">
                     <tbody id = "histogramTableBody">
                     </tbody>
@@ -77,7 +78,7 @@
     </form>
 
     <br><br>
-
+    <h1>Data Table</h1>
     <div id = "fdata"><%= data %></div>
 
 
@@ -85,11 +86,10 @@
         // Populate table of csv data
         var fdata = document.getElementById('fdata');
         var fdatahtml = fdata.innerHTML;
-        fdata.innerHTML = 'DATA TABLE<br>';
         var lines = fdatahtml.trim().split('\n');
         var newDT = []; 
-        var tableData = createCSVTable(newDT); // contains csv file in array 
-        fdata.innerHTML += tableData;
+        var tableData = createCSVTable(newDT, lines); // contains csv file in array 
+        fdata.innerHTML = tableData;
         var finalCSVdata = [];
         var is_scaled = true;
 
@@ -99,6 +99,8 @@
         var slider = document.getElementById("myRange");
         var output = document.getElementById("demo");
         
+
+        // BUG: Everything delcared inside here can't be accessed/exported globally
         slider.oninput = function(){
             var is_scaled = true;
             console.log('============== slider oninput start =============');
@@ -109,9 +111,11 @@
             }else{
                 is_scaled = true;
             }
+            
+            // get the oiriginal csv data
+            var lines = fdatahtml.trim().split('\n');
             var newDT = []; 
-            var tableData = createCSVTable(newDT); // contains csv file in array 
-            fdata.innerHTML += tableData;
+            var tableData = createCSVTable(newDT, lines); // contains csv file in array 
 
 
             var studentsFinalGrades = scaleHistogram(newDT, scaleValue);
@@ -120,20 +124,48 @@
             // console.log('AFTER ALL csv data\n', finalCSVdata);
             var finalCSVdata = add_final_total_to_(newDT, studentsFinalGrades);
             console.log('AFTER ALL csv data\n', finalCSVdata);
+
+            var newScaledTableData = plotNewCSVDataTable(finalCSVdata, finalCSVdata.length);
+            fdata.innerHTML = newScaledTableData;
+
             console.log('============== slider oninput end =============');
         }
         
+        
+        
+        console.log('============== No slider start =============');
         studentsFinalGrades = create_histogram_of(newDT, null);
-
-        
-        
-        // console.log('student final grades check \n', studentsFinalGrades);
-        // // finalCSVdata = add_final_total_to_(newDT, studentsFinalGrades);
-        // console.log('AFTER ALL csv data\n', finalCSVdata);
-
-
+        console.log('student final grades check \n', studentsFinalGrades);
+        finalCSVdata = add_final_total_to_(newDT, studentsFinalGrades);
+        console.log('AFTER ALL csv data\n', finalCSVdata);
+        var newScaledTableData = plotNewCSVDataTable(finalCSVdata, finalCSVdata.length);
+        fdata.innerHTML = newScaledTableData;
+        console.log('============== No slider end =============');
 
 
+
+
+
+
+        function plotNewCSVDataTable(newDataTable, newDataTable_length){
+            var tableData = '<table>';
+            
+            for(var row = 0; row < newDataTable_length; row++){
+                tableData += '<tr>';
+                for (var col = 0; col < newDataTable[row].length; col++){
+                    if(row === 0 ){
+                        tableData += '<th>' + newDataTable[row][col] + '</th>';
+                    }else{
+                        tableData += '<td>' + newDataTable[row][col] + '</td>';
+                    }
+                }
+                tableData += '</tr>';
+            }
+            tableData += '</table>';
+
+        // console.log(tableData);
+       return tableData;
+        }
 
 
 
@@ -163,11 +195,11 @@
                         newCSVdata[records].push('-');
                     }
                 }else{
-                    if (!newCSVdata[records].includes(finalTotals[studentID]) || !newCSVdata[records].includes(find_grade_letter_of(finalTotals[studentID]))){
+                    if (!newCSVdata[records].includes((Math.round(finalTotals[studentID]*100)/100).toFixed(2)) || !newCSVdata[records].includes(find_grade_letter_of(finalTotals[studentID]))){
                         // get the current row studnetID
                         var studentID = csvData[records][0];
                         // add final percentage and letter grade
-                        newCSVdata[records].push(finalTotals[studentID]); 
+                        newCSVdata[records].push((Math.round(finalTotals[studentID]*100)/100).toFixed(2)); 
                         newCSVdata[records].push(find_grade_letter_of(finalTotals[studentID])); 
                         
                     }
@@ -411,7 +443,7 @@
      
 
 
-        function createCSVTable(newDataTable){
+        function createCSVTable(newDataTable, lines){
             var tableData = '<table>';
             
                 for(var row = 0; row < lines.length; row++){
