@@ -9,7 +9,7 @@
     table{
         text-align: center;
     }
-    td, th, table{
+    td, th{
         border: 1px solid grey;
     }
     .slidecontainer {
@@ -51,35 +51,33 @@
     }
 </style>
 <body>
-    <h1>Scale Adjustment</h1>
+    <h1>SCALE PAGE</h1>
+    <form method = "post" enctype="multipart/form-data">
+        <input type="submit" formaction="/handleLogout" value="logout">
+    </form>
+    
     <div class = 'container' style="width: 100%; display:grid; grid-column-gap: 5px;">
-            <div class="slidecontainer" stype=''>
-                <label for="myRange">Please set a cutoff value on a scale from 1 to 200</label>
-                <br><br>
-                <input type="range" min="1" max="200" value="100" name ="myRnage" class="slider" id="myRange">
-                <p>Current value: <span id="demo"></span></p>
-                <p>Student count: <span id="studentCount"></span></p>
-            </div>
-            <div>
-                <h1>Histogram</h1>
-                <table id = "histogramTable">
-                    <tbody id = "histogramTableBody">
-                    </tbody>
-                </table>
-            </div>
+        <h2>1. Scale Adjustment</h2>
+        <div class="slidecontainer">
+            <label for="myRange">Please set a cutoff value on a scale from 1 to 200</label>
+            <br><br>
+            <input type="range" min="1" max="200" value="100" name ="myRnage" class="slider" id="myRange">
+            <p>Current value: <span id="demo">100</span></p>
+            <p>Student count: <span id="studentCount"></span></p>
+        </div>
+        <div>
+            <h2>2. Histogram</h2>
+            <table id = "histogramTable">
+                <tbody id = "histogramTableBody">
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <h2>3. Data Table</h2>
+            <div id = "fdata"><%= data %></div>
         </div>
     </div>
 
-    <br><br>
-
-    <form method = "post" enctype="multipart/form-data">
-        <input type="submit" formaction="/handleFile" value="submit" >
-        <input type="submit" formaction="/handleLogout" value="logout">
-    </form>
-
-    <br><br>
-    <h1>Data Table</h1>
-    <div id = "fdata"><%= data %></div>
 
 
     <script>
