@@ -1,6 +1,4 @@
-const http = require("http");
 const mysql = require("mysql");
-const path = require("path");
 const fs = require('fs');
 const express = require("express");
 const ejs = require("ejs");
