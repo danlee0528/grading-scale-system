@@ -1,14 +1,11 @@
-# Use the official lightweight Node.js 10 image.
-# https://hub.docker.com/_/node
-FROM node:10.9.0-alpine
+# This image comes with Node.js and NPM already installed
+FROM node:10
 
-# Create and change to the app directory.
-RUN mkdir -p /usr/src/app
+# Create a directory to hold the application code inside the image
 WORKDIR /usr/src/app
 
-# Copy application dependency manifests to the container image.
-# A wildcard is used to ensure both package.json AND package-lock.json are copied.
-# Copying this separately prevents re-running npm install on every code change.
+# intsall app dependencies using the npm binary
+# npm version 4 or earlier doesn't generate package-lock.json
 COPY package*.json ./
 
 # Install production dependencies.
@@ -17,6 +14,9 @@ RUN npm install
 # Copy local code to the container image.
 COPY . .
 
+
 EXPOSE 8080
+
+
 # Run the web service on container startup.
-CMD [ "npm", "start" ]
+CMD [ "node", "server.js" ]
