@@ -11,6 +11,10 @@
 5. Table Search - users can serach studentID
 6. In case of errors, error messages will be displayed to users
 
+# CSV Format
+1. CSV file must have entries separated by a comma
+2. CSV file must start with headers and have a row beginning with "total"
+
 # Note
 1. When applying scaling, students who exceed 100% will be counted towards A+ in spite of their grades over 100%;
 2. csv files will be saved in 'public\uplods' and it will not affect subsequent jobs unless the user reuploads the changed file. 
