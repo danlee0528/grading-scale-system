@@ -20,3 +20,13 @@
 2. csv files will be saved in 'public\uplods' and it will not affect subsequent jobs unless the user reuploads the changed file. 
 3. For uploading csv file, I tested with several csv files created by Windows office, text document and professor, all of them were identified to have application/octet-stream as meme types. I couldn't fix this behaviour because it's beyond my comprehensibility. As a solution to this, I askd the user to upload csv file on the uploading page. (Possible bug is any other file type that contains a string in form of 'total,32,12,42,45.66' and so on).
 4. CSV test files can be found in '../public/uplodas'
+
+# Demo
+## Login
+![login-demo](https://github.com/danlee0528/grading-scale-system/blob/master/login-demo.gif)
+
+## CSV file submission
+![file-upload](https://github.com/danlee0528/grading-scale-system/blob/master/fileuploading-demo.gif)
+
+## Grade Scaling and Table Searching
+![grade-result](https://github.com/danlee0528/grading-scale-system/blob/master/scaling-demo.gif)
