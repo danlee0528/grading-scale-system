@@ -23,10 +23,11 @@
 
 # Demo
 ## Login
-![login-demo](https://github.com/danlee0528/grading-scale-system/blob/master/login-demo.gif)
+<img src= "/login-demo.gif" width="600">
 
 ## CSV file submission
+<img src= "/fileuploading-demo.gif" width="600">
 ![file-upload](https://github.com/danlee0528/grading-scale-system/blob/master/fileuploading-demo.gif)
 
 ## Grade Scaling and Table Searching
-![grade-result](https://github.com/danlee0528/grading-scale-system/blob/master/scaling-demo.gif)
+<img src= "/scaling-demo.gif" width="600">
