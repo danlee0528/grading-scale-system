@@ -1,7 +1,7 @@
 # Dependencies
 1. Please install necessary npm packages via "npm i"
 2. Inside public/uploads, valid user's csv files will be saved. If the name of a csv file exists, the existing file will be overwritten by a new submission.
-3. Docker Repo <your ID>/<repo>:<tag> // TODO
+3. Docker Repo: https://hub.docker.com/repository/docker/wbot1234567/final-app 
 
 # Features
 1. Login - user credentials are hashed with MD5
